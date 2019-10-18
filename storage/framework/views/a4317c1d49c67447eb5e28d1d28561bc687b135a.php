@@ -1,0 +1,205 @@
+<?php $__env->startSection('page-title'); ?>
+    <div class="row bg-title">
+        <!-- .page title -->
+        <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+            <h4 class="page-title"><i class="<?php echo e($pageIcon); ?>"></i> <?php echo e(__($pageTitle)); ?></h4>
+        </div>
+        <!-- /.page title -->
+        <!-- .breadcrumb -->
+        <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="<?php echo e(route('member.dashboard')); ?>"><?php echo app('translator')->getFromJson('app.menu.home'); ?></a></li>
+                <li><a href="<?php echo e(route('member.leaves.index')); ?>"><?php echo e(__($pageTitle)); ?></a></li>
+                <li class="active"><?php echo app('translator')->getFromJson('app.addNew'); ?></li>
+            </ol>
+        </div>
+        <!-- /.breadcrumb -->
+    </div>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('head-script'); ?>
+<link rel="stylesheet" href="<?php echo e(asset('plugins/bower_components/custom-select/custom-select.css')); ?>">
+<link rel="stylesheet" href="<?php echo e(asset('plugins/bower_components/bootstrap-select/bootstrap-select.min.css')); ?>">
+<link rel="stylesheet" href="<?php echo e(asset('plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.css')); ?>">
+<?php $__env->stopPush(); ?>
+
+<?php $__env->startSection('content'); ?>
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="panel ">
+                <div class="panel-heading"> <?php echo app('translator')->getFromJson('modules.leaves.assignLeave'); ?></div>
+                <div class="panel-wrapper collapse in" aria-expanded="true">
+                    <div class="panel-body">
+                        <?php echo Form::open(['id'=>'createLeave','class'=>'ajax-form','method'=>'POST']); ?>
+
+                        <div class="form-body">
+                            <?php echo Form::hidden('user_id', $user->id); ?>
+
+                            <div class="row">
+
+                                <div class="col-md-12 ">
+                                    <div class="form-group">
+                                        <label class="control-label"><?php echo app('translator')->getFromJson('modules.leaves.leaveType'); ?></label>
+                                        <select class="selectpicker form-control" name="leave_type_id" id="leave_type_id"
+                                                data-style="form-control">
+                                            <?php $__empty_1 = true; $__currentLoopData = $leaveTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $leaveType): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                                <option value="<?php echo e($leaveType->id); ?>"><?php echo e(ucwords($leaveType->type_name)); ?></option>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                                <option value=""><?php echo app('translator')->getFromJson('messages.noLeaveTypeAdded'); ?></option>
+                                            <?php endif; ?>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label><?php echo app('translator')->getFromJson('modules.leaves.selectDuration'); ?></label>
+                                        <div class="radio-list">
+                                            <label class="radio-inline p-0">
+                                                <div class="radio radio-info">
+                                                    <input type="radio" name="duration" id="duration_single" checked value="single">
+                                                    <label for="duration_single"><?php echo app('translator')->getFromJson('modules.leaves.single'); ?></label>
+                                                </div>
+                                            </label>
+                                            <label class="radio-inline">
+                                                <div class="radio radio-info">
+                                                    <input type="radio" name="duration" id="duration_multiple" value="multiple">
+                                                    <label for="duration_multiple"><?php echo app('translator')->getFromJson('modules.leaves.multiple'); ?></label>
+                                                </div>
+                                            </label>
+                                            <label class="radio-inline">
+                                                <div class="radio radio-info">
+                                                    <input type="radio" name="duration" id="duration_half_day" value="half day">
+                                                    <label for="duration_half_day"><?php echo app('translator')->getFromJson('modules.leaves.halfDay'); ?></label>
+                                                </div>
+                                            </label>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!--/row-->
+
+                            <div class="row">
+                                <div class="col-md-6" id="single-date">
+                                    <label><?php echo app('translator')->getFromJson('app.date'); ?></label>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="leave_date" id="single_date" value="<?php echo e(Carbon\Carbon::today()->format('m/d/Y')); ?>">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6" id="multi-date" style="display: none">
+                                    <label><?php echo app('translator')->getFromJson('modules.leaves.selectDates'); ?> <h6>(<?php echo app('translator')->getFromJson('messages.selectMultipleDates'); ?>)</h6></label>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="multi_date" id="multi_date" value="<?php echo e(Carbon\Carbon::today()->format('m/d/Y')); ?>">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!--/span-->
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label><?php echo app('translator')->getFromJson('modules.leaves.reason'); ?></label>
+                                    <div class="form-group">
+                                        <textarea name="reason" id="reason" class="form-control" cols="30" rows="5"></textarea>
+                                    </div>
+                                </div>
+
+                                <?php echo Form::hidden('status', 'pending'); ?>
+
+
+                            </div>
+
+
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" id="save-form-2" class="btn btn-success"><i class="fa fa-check"></i>
+                                <?php echo app('translator')->getFromJson('app.save'); ?>
+                            </button>
+                            <button type="reset" class="btn btn-default"><?php echo app('translator')->getFromJson('app.reset'); ?></button>
+                        </div>
+                        <?php echo Form::close(); ?>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    <!-- .row -->
+
+    
+    <div class="modal fade bs-modal-md in" id="projectCategoryModal" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" id="modal-data-application">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <span class="caption-subject font-red-sunglo bold uppercase" id="modelHeading"></span>
+                </div>
+                <div class="modal-body">
+                    Loading...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn blue">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('footer-script'); ?>
+<script src="<?php echo e(asset('plugins/bower_components/custom-select/custom-select.min.js')); ?>"></script>
+<script src="<?php echo e(asset('plugins/bower_components/bootstrap-select/bootstrap-select.min.js')); ?>"></script>
+<script src="<?php echo e(asset('plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.js')); ?>"></script>
+<script>
+
+
+    $(".select2").select2({
+        formatNoMatches: function () {
+            return "<?php echo e(__('messages.noRecordFound')); ?>";
+        }
+    });
+
+    jQuery('#multi_date').datepicker({
+        multidate: true,
+        todayHighlight: true
+    });
+
+    jQuery('#single_date').datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+
+    $("input[name=duration]").click(function () {
+        if($(this).val() == 'multiple'){
+            $('#multi-date').show();
+            $('#single-date').hide();
+        }
+        else{
+            $('#multi-date').hide();
+            $('#single-date').show();
+        }
+    })
+
+
+    $('#save-form-2').click(function () {
+        $.easyAjax({
+            url: '<?php echo e(route('member.leaves.store')); ?>',
+            container: '#createLeave',
+            type: "POST",
+            redirect: true,
+            data: $('#createLeave').serialize()
+        })
+    });
+</script>
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.member-app', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
